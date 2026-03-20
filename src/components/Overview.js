@@ -3,7 +3,7 @@ import { useTheme } from './ThemeContext';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Icon from './Icon';
-import headerBgImage from '../header-background.png';
+import headerBgImage from '../images/header-background.png';
 
 // ─── Figma Design Tokens (exact values from MCP get_design_context) ────────────
 // Colors: --text/text-title: #111927, --text/text-primary: #384250,

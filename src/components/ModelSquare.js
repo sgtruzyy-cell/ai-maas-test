@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import FilterPanel from './FilterPanel';
 import ModelCard from './ModelCard';
 import Icon from './Icon';
-import headerBgImage from '../header-background.png';
+import headerBgImage from '../images/header-background.png';
 
 /**
  * ModelSquare page - 模型广场

@@ -4,7 +4,7 @@ import ModelSquare from './components/ModelSquare';
 import Overview from './components/Overview';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('model-square');
+  const [currentPage, setCurrentPage] = useState('overview');
 
   return (
     <ThemeProvider>
