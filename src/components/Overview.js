@@ -3,6 +3,7 @@ import { useTheme } from './ThemeContext';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Icon from './Icon';
+import ModelCard from './ModelCard';
 import headerBgImage from '../images/header-background.png';
 
 // ─── Figma Design Tokens (exact values from MCP get_design_context) ────────────
@@ -36,6 +37,20 @@ const IMG = {
     trendLine: "http://localhost:3845/assets/21e33450f446f4839dc24ff49221245ea046ffc1.svg",
 };
 
+const obsHeaders = ['模型实例名称', '模型名称', '算力单元', '算力单元数量', '占用显存', '操作'];
+const obsTableRows = [
+    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
+    ['deepseek-67b-api', 'deepseek-67b', 'A100', '1', '24GB', '详情'],
+    ['chatglm-6b-dev', 'chatglm-6b', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
+];
+
 const obsMetrics = [
     { title: '总调用次数', value: '18,500', unit: '次' },
     { title: '请求成功率', value: '32.5', unit: '%', isNegative: true },
@@ -51,10 +66,77 @@ const obsRows = [
 ];
 
 // ─── Metric Card ─────────────────────────────────────────────────────────────
-// Figma: bg-primary_alt, border-[0.5px] border-strong, p-[16px], rounded-[12px],
-//        flex-col gap-[6px], value font: Roboto Medium 24px text-title
-function MetricCard({ title, value, unit, isNegative }) {
+function MetricCard({ title, value, unit, isNegative, variant }) {
     const { getVar } = useTheme();
+
+    // Exact colors from design tokens
+    const blueStart = '#4D6AFF'; // arken/arken-6
+    const blueEnd = '#36BFFA';   // skyblue/skyblue-6
+    const redColor = '#FF3A4B';  // red/red-6
+    const redLight = '#FF7875';
+    const bgNormal = '#f3f4f6';
+
+    const valNum = parseFloat(value) || 0;
+    const gradient = isNegative
+        ? `${redColor}, ${redLight}`
+        : `${blueStart}, ${blueEnd}`;
+
+    if (variant === 'gauge') {
+        return (
+            <div style={{
+                background: 'white',
+                border: '0.5px solid #d2d6db',
+                borderRadius: '12px',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                flex: '1 0 0',
+                minWidth: 0,
+                height: '148px',
+                fontFamily: F,
+            }}>
+                <p style={{
+                    fontSize: '14px',
+                    lineHeight: '22px',
+                    color: '#6c737f',
+                    margin: '0 0 12px 0',
+                    width: '100%',
+                    textAlign: 'left',
+                }}>{title}</p>
+                <div style={{
+                    position: 'relative',
+                    width: '72px',
+                    height: '72px',
+                    borderRadius: '50%',
+                    background: `conic-gradient(${isNegative ? redColor : blueStart}, ${isNegative ? redLight : blueEnd} ${valNum}%, ${bgNormal} 0)`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <div style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: '50%',
+                        background: 'white',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
+                    }}>
+                        <span style={{
+                            fontFamily: "'Roboto', sans-serif",
+                            fontWeight: 500,
+                            fontSize: '18px',
+                            color: '#111927',
+                        }}>{value}{unit}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div style={{
             background: 'white',
@@ -63,41 +145,53 @@ function MetricCard({ title, value, unit, isNegative }) {
             padding: '16px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '6px',
+            justifyContent: 'space-between',
             flex: '1 0 0',
             minWidth: 0,
             overflow: 'hidden',
             fontFamily: F,
+            position: 'relative',
         }}>
-            <p style={{
-                fontSize: '14px',
-                lineHeight: '22px',
-                color: '#384250',
-                fontFamily: "'PingFang SC', sans-serif",
-                margin: 0,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-            }}>{title}</p>
-            <div style={{ display: 'flex', gap: '2px', alignItems: 'flex-end', whiteSpace: 'nowrap' }}>
+            <div>
                 <p style={{
-                    fontFamily: "'Roboto', sans-serif",
-                    fontWeight: 500,
-                    fontSize: '24px',
-                    lineHeight: 'normal',
-                    color: isNegative ? getVar('red/red-6') : '#111927',
+                    fontSize: '14px',
+                    lineHeight: '22px',
+                    color: '#6c737f',
                     margin: 0,
-                }}>{value}</p>
-                {unit && (
+                }}>{title}</p>
+                <div style={{ display: 'flex', gap: '2px', alignItems: 'flex-end', marginTop: '4px' }}>
                     <p style={{
-                        fontFamily: F,
-                        fontSize: '12px',
-                        lineHeight: '20px',
-                        color: isNegative ? getVar('red/red-6') : '#6c737f',
+                        fontFamily: "'Roboto', sans-serif",
+                        fontWeight: 500,
+                        fontSize: '24px',
+                        color: isNegative ? '#ef4444' : '#111927',
                         margin: 0,
-                    }}>{unit}</p>
-                )}
+                    }}>{value}</p>
+                    {unit && (
+                        <p style={{
+                            fontFamily: F,
+                            fontSize: '12px',
+                            lineHeight: '20px',
+                            color: isNegative ? '#ef4444' : '#6c737f',
+                            margin: 0,
+                        }}>{unit}</p>
+                    )}
+                </div>
             </div>
+            {variant === 'trend' && (
+                <div style={{ width: '100%', height: '36px', marginTop: '12px', marginLeft: '-16px', marginRight: '-16px', width: 'calc(100% + 32px)' }}>
+                    <svg viewBox="0 0 100 24" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
+                        <defs>
+                            <linearGradient id={isNegative ? 'gradRed' : 'gradBlue'} x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor={isNegative ? redColor : blueStart} stopOpacity="0.2" />
+                                <stop offset="100%" stopColor={isNegative ? redColor : blueStart} stopOpacity="0" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M0,20 Q10,12 20,18 T40,8 T60,22 T80,14 T100,6" fill="none" stroke={isNegative ? redColor : blueStart} strokeWidth="2" strokeLinecap="round" />
+                        <path d="M0,20 Q10,12 20,18 T40,8 T60,22 T80,14 T100,6 L100,24 L0,24 Z" fill={`url(#${isNegative ? 'gradRed' : 'gradBlue'})`} />
+                    </svg>
+                </div>
+            )}
         </div>
     );
 }
@@ -266,7 +360,7 @@ function TrendChart() {
 function DonutChart({ totalLabel, totalValue, data }) {
     const { getVar } = useTheme();
     // Calculate percentages for conic-gradient
-    const total = data.reduce((acc, item) => acc + (parseFloat(item.value.replace(/,/g, '')) || 0), 0);
+    const total = data.reduce((acc, item) => acc + (parseFloat((item.value || "0").toString().replace(/,/g, '')) || 0), 0);
     let currentPercentage = 0;
     const colors = [
         getVar('arken/arken-6') || '#4D6AFF',
@@ -278,7 +372,7 @@ function DonutChart({ totalLabel, totalValue, data }) {
 
     const gap = 0.5; // Gap in percentage for white border
     const gradientSegments = data.map((item, i) => {
-        const val = parseFloat(item.value.replace(/,/g, '')) || 0;
+        const val = parseFloat((item.value || "0").toString().replace(/,/g, '')) || 0;
         const percent = (val / total) * 100;
         const start = currentPercentage;
         currentPercentage += percent;
@@ -392,55 +486,28 @@ function CardPanel({ title, children, style = {} }) {
 // ─── Model List Table ─────────────────────────────────────────────────────────
 // Exact columns & data from Figma MCP design context
 function ObservabilityTable() {
-    const { getVar } = useTheme();
-    const headers = ['模型名称', '状态', '总调用次数', '错误次数', '请求成功率', '平均耗时', '操作'];
-    const colWidths = [180, 80, 120, 100, 120, 120, 80];
-    const obsRows = [
-        ['qwen-7b-inrerence', '在线', '3,200', '12', '99.63%', '120ms', '详情'],
-        ['deepseek-67b-api', '在线', '1,800', '5', '99.72%', '150ms', '详情'],
-        ['chatglm-6b-dev', '离线', '1,200', '8', '99.33%', '180ms', '详情'],
-    ];
-
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', fontFamily: F }}>
-            {/* Header row */}
-            <div style={{ display: 'flex', background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
-                {headers.map((h, i) => (
-                    <div key={i} style={{
-                        width: colWidths[i], minWidth: colWidths[i], flexShrink: 0,
-                        padding: '12px 16px',
-                    }}>
-                        <span style={{ fontWeight: 500, fontSize: '12px', color: '#6c737f' }}>{h}</span>
-                    </div>
-                ))}
-            </div>
-            {/* Data rows */}
-            {obsRows.map((row, ri) => (
-                <div key={ri} style={{ display: 'flex', borderBottom: '1px solid #f3f4f6', alignItems: 'center' }}>
-                    {row.map((cell, ci) => (
-                        <div key={ci} style={{
-                            width: colWidths[ci], minWidth: colWidths[ci], flexShrink: 0,
-                            padding: '12px 16px',
-                        }}>
-                            {ci === 1 ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <div style={{
-                                        width: '6px', height: '6px', borderRadius: '50%',
-                                        backgroundColor: cell === '在线' ? '#10b981' : '#ef4444'
-                                    }} />
-                                    <span style={{ fontSize: '14px', color: '#111927' }}>{cell}</span>
-                                </div>
-                            ) : (
-                                <span style={{
-                                    fontSize: '14px',
-                                    color: ci === headers.length - 1 || ci === 0 ? getVar('arken/arken-6') : '#111927',
-                                    cursor: ci === headers.length - 1 || ci === 0 ? 'pointer' : 'default',
-                                }}>{cell}</span>
-                            )}
-                        </div>
+        <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px', background: 'white' }}>
+                <thead>
+                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                        {obsHeaders.map((h, i) => (
+                            <th key={i} style={{ padding: '16px', fontSize: '12px', fontWeight: 500, color: '#6c737f', fontFamily: F }}>{h}</th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {obsTableRows.map((row, i) => (
+                        <tr key={i} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                            {row.map((cell, j) => (
+                                <td key={j} style={{ padding: '16px', fontSize: '13px', color: cell === '详情' ? '#4D6AFF' : '#384250', fontWeight: 400, fontFamily: F, cursor: cell === '详情' ? 'pointer' : 'default' }}>
+                                    {cell}
+                                </td>
+                            ))}
+                        </tr>
                     ))}
-                </div>
-            ))}
+                </tbody>
+            </table>
         </div>
     );
 }
@@ -597,12 +664,29 @@ function Overview({ currentPage, onNavigate }) {
         { img: IMG.pieSlice4 },
     ];
 
-    const obsMetrics = [
-        { title: '在线模型', value: '2', unit: '个' },
-        { title: '总调用次数', value: '6,200', unit: '次' },
-        { title: '错误次数', value: '25', unit: '次', isNegative: true },
-        { title: '平均耗时', value: '150', unit: 'ms' },
-        { title: '请求成功率', value: '99.6%', unit: '' },
+    const mainObsMetrics = [
+        { title: '模型使用情况', value: '18', total: '24', percent: 40 },
+        { title: '算力分配情况', value: '32', total: '48', percent: 40 },
+        { title: '算力分配显存情况', value: '256', total: '256GB', percent: 40 },
+        { title: '算力使用率', value: '65', unit: '%', percent: 40 },
+    ];
+
+    // 1. 修改左侧：调用（成功）次数 Top 5
+    const obsErrorData = [
+        { name: 'qwen-7b', value: '3,200' },
+        { name: 'deepseek-67b', value: '1,800' },
+        { name: 'chatglm-6b', value: '1,200' },
+        { name: 'ernie-4 Ads', value: '800' },
+        { name: 'bge-large Ads', value: '500' }
+    ];
+
+    // 2. 修改右侧：调用 Token 量 Top 5
+    const obsLatencyData = [
+        { name: 'qwen-7b', value: '1,200,000' },
+        { name: 'deepseek-67b', value: '900,000' },
+        { name: 'chatglm-6b', value: '400,000' },
+        { name: 'ernie-4 Ads', value: '200,000' },
+        { name: 'bge-large Ads', value: '100,000' }
     ];
 
     return (
@@ -656,12 +740,12 @@ function Overview({ currentPage, onNavigate }) {
                         {activeTab === 'usage' ? (
                             <>
                                 {/* Usage Metrics */}
-                                <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
-                                    <MetricCard title="模型调用数" value="3" unit="个" />
-                                    <MetricCard title="调用总数" value="6,500" unit="次" />
-                                    <MetricCard title="调用Token总数" value="2,800,000" />
-                                    <MetricCard title="输入Token" value="1,650,000" />
-                                    <MetricCard title="输出Token" value="1,150,000" />
+                                <div style={{ display: 'flex', gap: '16px', width: '100%', flexWrap: 'wrap' }}>
+                                    <ModelCard variant="metric" title="模型调用数" value="3" unit="个" />
+                                    <ModelCard variant="metric" title="调用总数" value="6,500" unit="次" />
+                                    <ModelCard variant="metric" title="调用Token总数" value="2,800,000" />
+                                    <ModelCard variant="metric" title="输入Token" value="1,650,000" />
+                                    <ModelCard variant="metric" title="输出Token" value="1,150,000" />
                                 </div>
 
                                 <CardPanel title="总调用趋势" style={{ height: '280px' }}>
@@ -669,14 +753,14 @@ function Overview({ currentPage, onNavigate }) {
                                 </CardPanel>
 
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                    <CardPanel title="调用（成功）次数Top 5">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
+                                    <CardPanel title="调用（成功）次数Top 5" style={{ minWidth: 0 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '80px', flexWrap: 'nowrap', overflow: 'hidden' }}>
                                             <DonutChart totalLabel="累计调用" totalValue="6500" data={top5CallData} />
                                             <PieLegend items={top5CallData} />
                                         </div>
                                     </CardPanel>
-                                    <CardPanel title="调用Token量Top 5">
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '80px' }}>
+                                    <CardPanel title="调用Token量Top 5" style={{ minWidth: 0 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '80px', flexWrap: 'nowrap', overflow: 'hidden' }}>
                                             <DonutChart totalLabel="累计Token" totalValue="280w" data={top5TokenData} />
                                             <PieLegend items={top5TokenData} />
                                         </div>
@@ -694,23 +778,25 @@ function Overview({ currentPage, onNavigate }) {
                             </>
                         ) : (
                             <>
-                                {/* Observability Metrics */}
                                 <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
-                                    {obsMetrics.map((m, idx) => (
-                                        <MetricCard key={idx} {...m} />
+                                    {mainObsMetrics.map((m, idx) => (
+                                        <ModelCard
+                                            key={idx}
+                                            variant="metric"
+                                            {...m}
+                                        />
                                     ))}
                                 </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                    <CardPanel title="调用趋势" style={{ height: '280px' }}>
-                                        <TrendChart />
-                                    </CardPanel>
-                                    <CardPanel title="耗时趋势" style={{ height: '280px' }}>
-                                        <TrendChart />
-                                    </CardPanel>
-                                </div>
+                                <CardPanel title="模型显存使用率" style={{ height: '280px' }}>
+                                    <TrendChart />
+                                </CardPanel>
 
-                                <CardPanel title="模型调用详情" style={{ marginBottom: '32px' }}>
+                                <CardPanel title="模型GPU核心利用率" style={{ height: '280px' }}>
+                                    <TrendChart />
+                                </CardPanel>
+
+                                <CardPanel title="模型列表" style={{ marginBottom: '32px' }}>
                                     <ObservabilityTable />
                                 </CardPanel>
                             </>

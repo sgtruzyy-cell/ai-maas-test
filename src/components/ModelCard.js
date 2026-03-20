@@ -11,6 +11,11 @@ import Button from './Button';
  *   - Card height stays the same in default and hover states
  */
 function ModelCard({
+    // Shared props
+    variant = 'default', // 'default' or 'metric'
+    onSelect,
+
+    // Default variant props
     name = '通义千问Max',
     provider = 'qwen-max',
     tags = ['旗舰', '高性能'],
@@ -19,7 +24,13 @@ function ModelCard({
     size = '32K',
     versions = 3,
     isSelected = false,
-    onSelect,
+
+    // Metric variant props
+    title,
+    value,
+    total,
+    unit,
+    percent,
 }) {
     const { getVar } = useTheme();
     const [isHovered, setIsHovered] = useState(false);
@@ -43,7 +54,7 @@ function ModelCard({
     const cardStyle = {
         display: 'flex',
         flexDirection: 'column',
-        padding: '20px',
+        padding: '16px',
         gap: '12px',
         borderRadius: '12px',
         border: `1px solid ${isActive ? borderBrand : borderNormal}`,
@@ -52,8 +63,6 @@ function ModelCard({
         transition: 'all 0.2s ease',
         boxSizing: 'border-box',
         fontFamily: "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        // Fixed height to keep default and hover the same size
-        minHeight: '230px',
     };
 
     const headerStyle = {
@@ -135,6 +144,103 @@ function ModelCard({
             onSelect();
         }
     };
+
+    if (variant === 'metric') {
+        const metricStyle = {
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px',
+            borderRadius: '12px',
+            border: `1px solid ${borderNormal}`,
+            background: bgPrimary,
+            flex: '1 0 0',
+            boxSizing: 'border-box',
+            fontFamily: "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        };
+
+        const radius = 28;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (percent / 100) * circumference;
+
+        return (
+            <div style={metricStyle}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <p style={{
+                        fontSize: '14px',
+                        lineHeight: '22px',
+                        color: textSecondary,
+                        fontWeight: 400,
+                        margin: 0,
+                    }}>{title}</p>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                        <span style={{
+                            fontSize: '24px',
+                            fontWeight: 600,
+                            color: textTitle,
+                        }}>{value}</span>
+                        {(total || unit) && (
+                            <span style={{
+                                fontSize: '12px',
+                                color: getVar('text/text-placeholder') || '#9DA4AE',
+                            }}>{total ? `/${total}` : unit}</span>
+                        )}
+                    </div>
+                </div>
+
+                {percent !== undefined && (
+                    <div style={{ width: '64px', height: '64px', position: 'relative' }}>
+                        <svg width="64" height="64" viewBox="0 0 64 64">
+                            <defs>
+                                <linearGradient id="metric-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stopColor="#EE9AE5" />
+                                    <stop offset="100%" stopColor="#5961F9" />
+                                </linearGradient>
+                            </defs>
+                            {/* Background circle */}
+                            <circle
+                                cx="32"
+                                cy="32"
+                                r={radius}
+                                fill="transparent"
+                                stroke={getVar('background/bg-secondary') || '#F9FAF7'}
+                                strokeWidth="6"
+                            />
+                            {/* Progress circle */}
+                            <circle
+                                cx="32"
+                                cy="32"
+                                r={radius}
+                                fill="transparent"
+                                stroke="url(#metric-gradient)"
+                                strokeWidth="6"
+                                strokeDasharray={circumference}
+                                strokeDashoffset={offset}
+                                strokeLinecap="round"
+                                transform="rotate(-90 32 32)"
+                            />
+                            {/* Center text */}
+                            <text
+                                x="50%"
+                                y="50%"
+                                textAnchor="middle"
+                                dy=".3em"
+                                style={{
+                                    fontSize: '12px',
+                                    fontWeight: 600,
+                                    fontFamily: "'Roboto', sans-serif",
+                                    fill: textTitle,
+                                }}
+                            >
+                                {percent}%
+                            </text>
+                        </svg>
+                    </div>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div
