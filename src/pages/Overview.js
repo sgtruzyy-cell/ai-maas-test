@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useTheme } from './ThemeContext';
-import Header from './Header';
-import Sidebar from './Sidebar';
-import Icon from './Icon';
-import ModelCard from './ModelCard';
+import { useTheme } from '../context/ThemeContext';
+import Header from '../components/layout/Header';
+import Sidebar from '../components/layout/Sidebar';
+import Icon from '../components/common/Icon';
+import ModelCard from '../components/cards/ModelCard';
 import headerBgImage from '../images/header-background.png';
 
 // ─── Figma Design Tokens (exact values from MCP get_design_context) ────────────
@@ -37,18 +37,15 @@ const IMG = {
     trendLine: "http://localhost:3845/assets/21e33450f446f4839dc24ff49221245ea046ffc1.svg",
 };
 
-const obsHeaders = ['模型实例名称', '模型名称', '算力单元', '算力单元数量', '占用显存', '操作'];
+const obsHeaders = ['模型实例名称', '模型名称', '运行状态', '算力单元', '算力单元数量', '占用显存', '操作'];
 const obsTableRows = [
-    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
-    ['deepseek-67b-api', 'deepseek-67b', 'A100', '1', '24GB', '详情'],
-    ['chatglm-6b-dev', 'chatglm-6b', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
+    ['deepseek-67b-api', 'deepseek-67b', '运行中', 'A100', '1', '24GB', '详情'],
+    ['chatglm-6b-dev', 'chatglm-6b', '运行中', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
+    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
 ];
 
 const obsMetrics = [
@@ -485,26 +482,93 @@ function CardPanel({ title, children, style = {} }) {
 
 // ─── Model List Table ─────────────────────────────────────────────────────────
 // Exact columns & data from Figma MCP design context
+// ─── Table Shared Style Helpers ──────────────────────────────────────────────
+const getStatusDotStyle = (status) => {
+    const isSuccess = status === '成功' || status === 'Active' || status === '运行中';
+    const isWarning = status === 'Warning';
+    const isError = status === '失败' || status === 'Error';
+
+    const color = isSuccess ? '#12B76A' : (isWarning ? '#F79009' : (isError ? '#F04438' : '#98A2B3'));
+    return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#384250' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} />
+            <span>{status}</span>
+        </div>
+    );
+};
+
+const ActionButton = ({ icon, color = '#6c737f', title = '详情' }) => {
+    const [isHover, setIsHover] = useState(false);
+    return (
+        <button
+            title={title}
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+            style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px',
+                borderRadius: '6px',
+                border: 'none',
+                backgroundColor: isHover ? '#f3f4f6' : 'transparent',
+                color: color,
+                cursor: 'pointer',
+                fontSize: '18px',
+                transition: 'all 0.2s',
+            }}
+        >
+            <i className={icon}></i>
+        </button>
+    );
+};
+
+function TableRow({ children, isHeader = false }) {
+    const [isHover, setIsHover] = useState(false);
+    const bgRowNormal = 'white';
+    const bgRowHover = '#F9FAFB';
+
+    return (
+        <tr
+            style={{
+                backgroundColor: isHeader ? '#f9fafb' : (isHover ? bgRowHover : bgRowNormal),
+                transition: 'background-color 0.2s ease',
+            }}
+            onMouseEnter={() => !isHeader && setIsHover(true)}
+            onMouseLeave={() => !isHeader && setIsHover(false)}
+        >
+            {children}
+        </tr>
+    );
+}
+
 function ObservabilityTable() {
     return (
         <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px', background: 'white' }}>
                 <thead>
-                    <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <TableRow isHeader={true}>
                         {obsHeaders.map((h, i) => (
-                            <th key={i} style={{ padding: '16px', fontSize: '12px', fontWeight: 500, color: '#6c737f', fontFamily: F }}>{h}</th>
+                            <th key={i} style={{ padding: '12px 20px', fontSize: '12px', fontWeight: 500, color: '#6c737f', borderBottom: '1px solid #f3f4f6', fontFamily: F }}>{h}</th>
                         ))}
-                    </tr>
+                    </TableRow>
                 </thead>
                 <tbody>
                     {obsTableRows.map((row, i) => (
-                        <tr key={i} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                            {row.map((cell, j) => (
-                                <td key={j} style={{ padding: '16px', fontSize: '13px', color: cell === '详情' ? '#4D6AFF' : '#384250', fontWeight: 400, fontFamily: F, cursor: cell === '详情' ? 'pointer' : 'default' }}>
-                                    {cell}
-                                </td>
-                            ))}
-                        </tr>
+                        <TableRow key={i}>
+                            {row.map((cell, j) => {
+                                let content = cell;
+                                if (j === 2) content = getStatusDotStyle(cell);
+                                if (j === 6) content = <ActionButton icon="ri-eye-line" color="#4D6AFF" title="查看详情" />;
+
+                                return (
+                                    <td key={j} style={{ padding: '16px 20px', fontSize: '14px', color: '#111927', borderBottom: '1px solid #f3f4f6', fontWeight: 400, fontFamily: F }}>
+                                        {content}
+                                    </td>
+                                );
+                            })}
+                        </TableRow>
                     ))}
                 </tbody>
             </table>
@@ -513,49 +577,40 @@ function ObservabilityTable() {
 }
 
 // ─── Usage DataTable ────────────────────────────────────────────────────────
-// Exact columns & data from Figma MCP design context
 function UsageDataTable() {
     const headers = ['模型实例名称', '调用次数(次)', '调用失败', '调用失败率', '总Token', '输入Token', '操作'];
-    const colWidths = [190, 120, 100, 120, 120, 120, 80];
     const rows = [
         ['qwen-7b-inrerence', '3,200', '12', '0.37%', '1,200,000', '800,000', '详情'],
         ['deepseek-67b-api', '1,800', '5', '0.28%', '900,000', '600,000', '详情'],
         ['chatglm-6b-dev', '1,200', '8', '0.67%', '400,000', '250,000', '详情'],
     ];
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', fontFamily: F }}>
-            {/* Header row */}
-            <div style={{ display: 'flex', background: '#f9fafb', overflow: 'hidden' }}>
-                {headers.map((h, i) => (
-                    <div key={i} style={{
-                        width: colWidths[i], minWidth: colWidths[i], flexShrink: 0,
-                        padding: '9px 16px',
-                        display: 'flex', alignItems: 'center',
-                    }}>
-                        <span style={{ fontFamily: "'PingFang SC', sans-serif", fontWeight: 500, fontSize: '12px', lineHeight: '20px', color: '#6c737f' }}>{h}</span>
-                    </div>
-                ))}
-            </div>
-            {/* Data rows */}
-            {rows.map((row, ri) => (
-                <div key={ri} style={{ display: 'flex', borderBottom: '1px solid #f3f4f6' }}>
-                    {row.map((cell, ci) => (
-                        <div key={ci} style={{
-                            width: colWidths[ci], minWidth: colWidths[ci], flexShrink: 0,
-                            padding: '10px 16px 9px',
-                            display: 'flex', alignItems: 'center',
-                        }}>
-                            <span style={{
-                                fontFamily: "'PingFang SC', sans-serif",
-                                fontSize: '14px',
-                                lineHeight: '22px',
-                                color: ci === headers.length - 1 ? '#3b82f6' : '#111927',
-                                cursor: ci === headers.length - 1 ? 'pointer' : 'default',
-                            }}>{cell}</span>
-                        </div>
+        <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px', background: 'white' }}>
+                <thead>
+                    <TableRow isHeader={true}>
+                        {headers.map((h, i) => (
+                            <th key={i} style={{ padding: '12px 20px', fontSize: '12px', fontWeight: 500, color: '#6c737f', borderBottom: '1px solid #f3f4f6', fontFamily: F }}>{h}</th>
+                        ))}
+                    </TableRow>
+                </thead>
+                <tbody>
+                    {rows.map((row, i) => (
+                        <TableRow key={i}>
+                            {row.map((cell, j) => {
+                                let content = cell;
+                                if (j === headers.length - 1) content = <ActionButton icon="ri-eye-line" color="#4D6AFF" title="查询详情" />;
+
+                                return (
+                                    <td key={j} style={{ padding: '16px 20px', fontSize: '14px', color: (j === 0) ? '#111927' : '#384250', borderBottom: '1px solid #f3f4f6', fontWeight: j === 0 ? 500 : 400, fontFamily: F }}>
+                                        {content}
+                                    </td>
+                                );
+                            })}
+                        </TableRow>
                     ))}
-                </div>
-            ))}
+                </tbody>
+            </table>
         </div>
     );
 }
@@ -563,38 +618,38 @@ function UsageDataTable() {
 // ─── Recent Activity Table ────────────────────────────────────────────────────
 function RecentActivityTable() {
     const headers = ['时间', '资源名称', '操作类型', '操作详情', '状态'];
-    const colWidths = [180, 180, 120, 300, 120];
     const rows = [
         ['2025-03-19 09:21:33', 'qwen-7b-inrerence', '模型调用', 'POST /v1/chat/completions 200 OK', '成功'],
         ['2025-03-19 09:14:21', 'deepseek-67b-api', '模型调用', 'POST /v1/chat/completions 429 Rate Limit', '失败'],
         ['2025-03-19 09:08:44', 'chatglm-6b-dev', '配置更新', '更新并发数限制：20 → 50', '成功'],
     ];
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', width: '100%', fontFamily: F }}>
-            <div style={{ display: 'flex', background: '#f9fafb' }}>
-                {headers.map((h, i) => (
-                    <div key={i} style={{ width: colWidths[i], minWidth: colWidths[i], flexShrink: 0, padding: '9px 16px', display: 'flex', alignItems: 'center' }}>
-                        <span style={{ fontFamily: "'PingFang SC', sans-serif", fontWeight: 500, fontSize: '12px', lineHeight: '20px', color: '#6c737f' }}>{h}</span>
-                    </div>
-                ))}
-            </div>
-            {rows.map((row, ri) => (
-                <div key={ri} style={{ display: 'flex', borderBottom: '1px solid #f3f4f6' }}>
-                    {row.map((cell, ci) => (
-                        <div key={ci} style={{ width: colWidths[ci], minWidth: colWidths[ci], flexShrink: 0, padding: '10px 16px 9px', display: 'flex', alignItems: 'center' }}>
-                            <span style={{
-                                fontFamily: "'PingFang SC', sans-serif",
-                                fontSize: '14px',
-                                lineHeight: '22px',
-                                color: '#111927',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                            }}>{cell}</span>
-                        </div>
+        <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px', background: 'white' }}>
+                <thead>
+                    <TableRow isHeader={true}>
+                        {headers.map((h, i) => (
+                            <th key={i} style={{ padding: '12px 20px', fontSize: '12px', fontWeight: 500, color: '#6c737f', borderBottom: '1px solid #f3f4f6', fontFamily: F }}>{h}</th>
+                        ))}
+                    </TableRow>
+                </thead>
+                <tbody>
+                    {rows.map((row, i) => (
+                        <TableRow key={i}>
+                            {row.map((cell, j) => {
+                                let content = cell;
+                                if (j === 4) content = getStatusDotStyle(cell);
+
+                                return (
+                                    <td key={j} style={{ padding: '16px 20px', fontSize: '14px', color: '#384250', borderBottom: '1px solid #f3f4f6', fontWeight: 400, fontFamily: F }}>
+                                        {content}
+                                    </td>
+                                );
+                            })}
+                        </TableRow>
                     ))}
-                </div>
-            ))}
+                </tbody>
+            </table>
         </div>
     );
 }

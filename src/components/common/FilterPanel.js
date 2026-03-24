@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTheme } from './ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 
 /**
  * Filter panel for model categories and providers.

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { getVariableByName } from '../figma-variables-resolver';
-import { useTheme } from './ThemeContext';
+import { getVariableByName } from '../../figma-variables-resolver';
+import { useTheme } from '../../context/ThemeContext';
 
 const NavItemSet = () => {
   const { mode } = useTheme();

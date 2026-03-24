@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTheme } from './ThemeContext';
-import Icon from './Icon';
-import LogoSystem from '../images/LogoSystem.svg';
+import { useTheme } from '../../context/ThemeContext';
+import Icon from '../common/Icon';
+import LogoSystem from '../../images/LogoSystem.svg';
 
 /**
  * Top header/navigation bar matching Figma design.

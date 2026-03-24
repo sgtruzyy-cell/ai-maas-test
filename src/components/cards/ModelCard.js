@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTheme } from './ThemeContext';
-import Icon from './Icon';
-import Button from './Button';
+import { useTheme } from '../../context/ThemeContext';
+import Icon from '../common/Icon';
+import Button from '../common/Button';
 
 /**
  * Model Card component matching Figma design.
@@ -31,6 +31,7 @@ function ModelCard({
     total,
     unit,
     percent,
+    image, // Added image prop
 }) {
     const { getVar } = useTheme();
     const [isHovered, setIsHovered] = useState(false);
@@ -73,14 +74,15 @@ function ModelCard({
     };
 
     const modelIconStyle = {
-        width: '40px',
-        height: '40px',
+        width: '44px',
+        height: '44px',
         flexShrink: 0,
         backgroundColor: accent1,
         borderRadius: '8px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        overflow: 'hidden', // Ensure image stays in bounds
     };
 
     const titleStyle = {
@@ -252,7 +254,11 @@ function ModelCard({
             {/* Header: icon + name + provider */}
             <div style={headerStyle}>
                 <div style={modelIconStyle}>
-                    <Icon name="model-logo" size={24} color={getVar('accent/6')} />
+                    {image ? (
+                        <img src={image} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                        <Icon name="model-logo" size={26} color={getVar('accent/6')} />
+                    )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                     <p style={titleStyle}>{name}</p>

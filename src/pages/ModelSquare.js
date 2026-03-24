@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { useTheme } from './ThemeContext';
-import Header from './Header';
-import Sidebar from './Sidebar';
-import FilterPanel from './FilterPanel';
-import ModelCard from './ModelCard';
-import Icon from './Icon';
+import { useTheme } from '../context/ThemeContext';
+import Header from '../components/layout/Header';
+import Sidebar from '../components/layout/Sidebar';
+import FilterPanel from '../components/common/FilterPanel';
+import ModelCard from '../components/cards/ModelCard';
+import Icon from '../components/common/Icon';
 import headerBgImage from '../images/header-background.png';
+import ModelPhotoQwen from '../images/ModelPhoto_Qwen.png';
+import ModelPhotoDeepSeek from '../images/ModelPhoto_DeepSeek.png';
+import ModelPhotoLlama from '../images/ModelPhoto_Llama.png';
+import ModelPhotoKimi from '../images/ModelPhoto_Kimi.png';
+import ModelPhotoZhiPu from '../images/ModelPhoto_ZhiPu.png';
 
 /**
  * ModelSquare page - 模型广场
@@ -31,16 +36,30 @@ function ModelSquare({ currentPage, onNavigate }) {
   const font = "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
   // Mock model data
-  const models = Array(9).fill(null).map((_, index) => ({
-    id: index,
-    name: '通义千问Max',
-    provider: 'qwen-max',
-    tags: ['旗舰', '高性能'],
-    description: '通义千问系列最新旗舰模型。具备卓越的理解、生成和推理能力，适用于复杂任务的处理。',
-    modelSource: '通义千问',
-    size: '32K',
-    versions: 3,
-  }));
+  const modelAssets = [
+    { name: '通义千问-Max', provider: 'qwen-max', image: ModelPhotoQwen },
+    { name: 'Deepseek-V3', provider: 'deepseek-v3', image: ModelPhotoDeepSeek },
+    { name: 'Llama-3-70B', provider: 'llama-3', image: ModelPhotoLlama },
+    { name: 'Kimi-K2-Instruct', provider: 'moonshot', image: ModelPhotoKimi },
+    { name: 'GLM-4-9B', provider: 'zhipuai', image: ModelPhotoZhiPu },
+  ];
+
+  const models = Array(9).fill(null).map((_, index) => {
+    // Pick a random asset from the pool
+    const asset = modelAssets[Math.floor(Math.random() * modelAssets.length)];
+
+    return {
+      id: index,
+      name: asset.name,
+      provider: asset.provider,
+      image: asset.image,
+      tags: ['旗舰', '高性能'],
+      description: '基于最新一代大模型架构，具备卓越的跨模态理解、代码生成及复杂逻辑推理能力。',
+      modelSource: asset.name.split('-')[0],
+      size: '32K',
+      versions: 3,
+    };
+  });
 
   const handleCardSelect = (cardId) => {
     setSelectedCardId(prev => prev === cardId ? null : cardId);
@@ -299,6 +318,7 @@ function ModelSquare({ currentPage, onNavigate }) {
                       key={model.id}
                       name={model.name}
                       provider={model.provider}
+                      image={model.image}
                       tags={model.tags}
                       description={model.description}
                       modelSource={model.modelSource}
