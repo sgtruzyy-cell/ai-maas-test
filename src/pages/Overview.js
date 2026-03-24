@@ -396,24 +396,6 @@ function Overview({ currentPage, onNavigate }) {
         { title: '算力使用率', value: '65', unit: '%', percent: 40 },
     ];
 
-    // 1. 修改左侧：调用（成功）次数 Top 5
-    const obsErrorData = [
-        { name: 'qwen-7b', value: '3,200' },
-        { name: 'deepseek-67b', value: '1,800' },
-        { name: 'chatglm-6b', value: '1,200' },
-        { name: 'ernie-4 Ads', value: '800' },
-        { name: 'bge-large Ads', value: '500' }
-    ];
-
-    // 2. 修改右侧：调用 Token 量 Top 5
-    const obsLatencyData = [
-        { name: 'qwen-7b', value: '1,200,000' },
-        { name: 'deepseek-67b', value: '900,000' },
-        { name: 'chatglm-6b', value: '400,000' },
-        { name: 'ernie-4 Ads', value: '200,000' },
-        { name: 'bge-large Ads', value: '100,000' }
-    ];
-
     return (
         <div style={{ display: 'flex', flexDirection: 'column', width: '100vw', height: '100vh', overflow: 'hidden', background: '#f9fafb' }}>
             <Header />

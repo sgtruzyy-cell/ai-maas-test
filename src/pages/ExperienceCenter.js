@@ -19,12 +19,9 @@ function ExperienceCenter({ currentPage, onNavigate }) {
     const bgSecondary = getVar('background/bg-secondary') || '#F9FAFB';
     const bgSlidebar = getVar('background/bg-slidebar') || '#F7F9FF';
     const textTitle = getVar('text/text-title') || '#181D27';
-    const textPrimary = getVar('text/text-primary') || '#414651';
     const textSecondary = getVar('text/text-secondary') || '#6C737F';
     const borderNormal = getVar('border-normal') || '#D5D7DA';
     const borderAccent = getVar('border-accent') || '#4D6AFF';
-    const accentBg = getVar('accent/1') || '#EBF1FF';
-    const textAccent = getVar('text/text-accent') || '#4D6AFF';
 
     const font = "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
@@ -213,8 +210,6 @@ function ExperienceCenter({ currentPage, onNavigate }) {
                                         isSelected={selectedService === item.id}
                                         onClick={() => setSelectedService(item.id)}
                                         cardStyle={cardStyle}
-                                        accentBg={accentBg}
-                                        textAccent={textAccent}
                                         textTitle={textTitle}
                                         textSecondary={textSecondary}
                                         borderAccent={borderAccent}
@@ -254,7 +249,7 @@ function ExperienceCenter({ currentPage, onNavigate }) {
     );
 }
 
-function ServiceCard({ item, isSelected, onClick, cardStyle, accentBg, textAccent, textTitle, textSecondary, borderAccent, borderNormal, bgSecondary }) {
+function ServiceCard({ item, isSelected, onClick, cardStyle, textTitle, textSecondary, borderAccent, borderNormal, bgSecondary }) {
     const [isHover, setIsHover] = React.useState(false);
 
     return (
