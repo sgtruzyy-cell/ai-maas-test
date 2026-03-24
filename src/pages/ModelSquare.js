@@ -44,7 +44,6 @@ function ModelSquare({ currentPage, onNavigate }) {
   const textPlaceholder = getVar('text/text-placeholder') || '#A4A7AE';
   const borderNormal = getVar('border-normal') || '#D5D7DA';
   const borderWeak = getVar('border-weak') || '#E9EAEB';
-  const brandColor = getVar('ark-brand-color') || '#4D6AFF'; // Assuming brand blue
 
   const font = "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
