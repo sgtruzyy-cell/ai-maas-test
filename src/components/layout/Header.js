@@ -55,7 +55,7 @@ function Header() {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: '40px',
+        gap: '16px',
         flex: 1,
         height: '100%',
     };
