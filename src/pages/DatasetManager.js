@@ -16,7 +16,6 @@ import logoData from '../images/DataSetFolder.png';
 function DatasetManager({ currentPage, onNavigate }) {
     const { getVar } = useTheme();
 
-    const bgPrimary = getVar('background/bg-primary') || '#FFFFFF';
     const bgSecondary = getVar('background/bg-secondary') || '#F9FAFB';
     const bgSlidebar = getVar('background/bg-slidebar') || '#F7F9FF';
     const textTitle = getVar('text/text-title') || '#181D27';
