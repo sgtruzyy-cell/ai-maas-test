@@ -21,8 +21,8 @@ function ExperienceCenter({ currentPage, onNavigate }) {
     const textTitle = getVar('text/text-title') || '#181D27';
     const textPrimary = getVar('text/text-primary') || '#414651';
     const textSecondary = getVar('text/text-secondary') || '#6C737F';
-    const borderNormal = getVar('border/border-normal') || '#D5D7DA';
-    const borderAccent = getVar('border/border-accent') || '#4D6AFF';
+    const borderNormal = getVar('border-normal') || '#D5D7DA';
+    const borderAccent = getVar('border-accent') || '#4D6AFF';
     const accentBg = getVar('accent/1') || '#EBF1FF';
     const textAccent = getVar('text/text-accent') || '#4D6AFF';
 

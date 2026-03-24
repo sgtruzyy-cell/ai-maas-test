@@ -18,8 +18,8 @@ function ModelService({ currentPage, onNavigate }) {
     const textTitle = getVar('text/text-title') || '#181D27';
     const textPrimary = getVar('text/text-primary') || '#414651';
     const textSecondary = getVar('text/text-secondary') || '#6C737F';
-    const borderNormal = getVar('border/border-normal') || '#D5D7DA';
-    const borderWeak = getVar('border/border-weak') || '#F3F4F6';
+    const borderNormal = getVar('border-normal') || '#D5D7DA';
+    const borderWeak = getVar('border-weak') || '#F3F4F6';
     const textAccent = getVar('text/text-accent') || '#4D6AFF';
 
     const services = [

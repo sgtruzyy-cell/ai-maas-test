@@ -5,6 +5,7 @@ import Sidebar from '../components/layout/Sidebar';
 import Icon from '../components/common/Icon';
 import ModelCard from '../components/cards/ModelCard';
 import headerBgImage from '../images/header-background.png';
+import StandardTable, { StandardActionButtons, StatusBadge } from '../components/common/StandardTable';
 
 // ─── Figma Design Tokens (exact values from MCP get_design_context) ────────────
 // Colors: --text/text-title: #111927, --text/text-primary: #384250,
@@ -18,180 +19,13 @@ import headerBgImage from '../images/header-background.png';
 
 const F = "'PingFang SC', -apple-system, sans-serif";
 
-// ─── Figma icon & chart SVG assets (served by Figma Desktop MCP localhost) ──
-const IMG = {
-    pieSlice0: "http://localhost:3845/assets/280141870f5871731364f8749a491657783973d8.svg",
-    pieSlice1: "http://localhost:3845/assets/72006b6bc9e95f8166459dd4077f7a34765d8ee7.svg",
-    pieSlice2: "http://localhost:3845/assets/f7b6b450b150f7a2fb1c87ac9f1db6e885c8c761.svg",
-    pieSlice3: "http://localhost:3845/assets/65b4b4ec40dcdbff79151bd5aa8bcf7056663ef3.svg",
-    pieSlice4: "http://localhost:3845/assets/99e20f6ad3569a4b6dc58cab1f33f05970990b7a.svg",
-    dot0: "http://localhost:3845/assets/e3ac2105e30a282eb965c70c59f99a290171549e.svg",
-    dot1: "http://localhost:3845/assets/e8290a4b0bb8e7fa7aaa5a4786d2c70d7ddaa686.svg",
-    dot2: "http://localhost:3845/assets/fa5e748608469bf67cc1b7a36e21887a792a39fb.svg",
-    dot3: "http://localhost:3845/assets/71b4555f5332eadef63653d12c7c33250cd792ce.svg",
-    dot4: "http://localhost:3845/assets/8ea9c8d10505002aeb563730787a6c9720d2121e.svg",
-    chevronDown: "http://localhost:3845/assets/8d6779e5b38c4c47671e198e66066ea71dc9f05c.svg",
-    divider: "http://localhost:3845/assets/49b5ca2d628d712c99ad88a7b1bfd45d16fc2827.svg",
-    // Trend chart area+line SVGs from Figma
-    areaFill: "http://localhost:3845/assets/c0e9a3dfd115581b9fd9441b49385f3d32e6e67e.svg",
-    trendLine: "http://localhost:3845/assets/21e33450f446f4839dc24ff49221245ea046ffc1.svg",
-};
+// Mock data moved into columns/data definitions inside Overview component
 
-const obsHeaders = ['模型实例名称', '模型名称', '运行状态', '算力单元', '算力单元数量', '占用显存', '操作'];
-const obsTableRows = [
-    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
-    ['deepseek-67b-api', 'deepseek-67b', '运行中', 'A100', '1', '24GB', '详情'],
-    ['chatglm-6b-dev', 'chatglm-6b', '运行中', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
-    ['qwen-7b-inrerence', 'qwen-7b', '运行中', 'A100', '1', '24GB', '详情'],
-];
+// Mock data moved into columns/data definitions inside Overview component
 
-const obsMetrics = [
-    { title: '总调用次数', value: '18,500', unit: '次' },
-    { title: '请求成功率', value: '32.5', unit: '%', isNegative: true },
-    { title: '平均响应耗时', value: '256', unit: 'ms' },
-    { title: '总错误次数', value: '65', unit: '次' },
-];
+// ─── Segmented Tabs (Figma: "Tabs" component) ────────────────────────────────
 
-const obsRows = [
-    ['qwen-max', '在线', '8,500', '12', '99.86%', '156ms', '详情'],
-    ['qwen-plus', '错误', '4,200', '48', '98.86%', '212ms', '详情'],
-    ['deepseek-chat', '在线', '3,800', '3', '99.92%', '45ms', '详情'],
-    ['chatglm-pro', '在线', '2,000', '2', '99.90%', '120ms', '详情'],
-];
 
-// ─── Metric Card ─────────────────────────────────────────────────────────────
-function MetricCard({ title, value, unit, isNegative, variant }) {
-    const { getVar } = useTheme();
-
-    // Exact colors from design tokens
-    const blueStart = '#4D6AFF'; // arken/arken-6
-    const blueEnd = '#36BFFA';   // skyblue/skyblue-6
-    const redColor = '#FF3A4B';  // red/red-6
-    const redLight = '#FF7875';
-    const bgNormal = '#f3f4f6';
-
-    const valNum = parseFloat(value) || 0;
-    const gradient = isNegative
-        ? `${redColor}, ${redLight}`
-        : `${blueStart}, ${blueEnd}`;
-
-    if (variant === 'gauge') {
-        return (
-            <div style={{
-                background: 'white',
-                border: '0.5px solid #d2d6db',
-                borderRadius: '12px',
-                padding: '16px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                flex: '1 0 0',
-                minWidth: 0,
-                height: '148px',
-                fontFamily: F,
-            }}>
-                <p style={{
-                    fontSize: '14px',
-                    lineHeight: '22px',
-                    color: '#6c737f',
-                    margin: '0 0 12px 0',
-                    width: '100%',
-                    textAlign: 'left',
-                }}>{title}</p>
-                <div style={{
-                    position: 'relative',
-                    width: '72px',
-                    height: '72px',
-                    borderRadius: '50%',
-                    background: `conic-gradient(${isNegative ? redColor : blueStart}, ${isNegative ? redLight : blueEnd} ${valNum}%, ${bgNormal} 0)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                }}>
-                    <div style={{
-                        width: '56px',
-                        height: '56px',
-                        borderRadius: '50%',
-                        background: 'white',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
-                    }}>
-                        <span style={{
-                            fontFamily: "'Roboto', sans-serif",
-                            fontWeight: 500,
-                            fontSize: '18px',
-                            color: '#111927',
-                        }}>{value}{unit}</span>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div style={{
-            background: 'white',
-            border: '0.5px solid #d2d6db',
-            borderRadius: '12px',
-            padding: '16px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            flex: '1 0 0',
-            minWidth: 0,
-            overflow: 'hidden',
-            fontFamily: F,
-            position: 'relative',
-        }}>
-            <div>
-                <p style={{
-                    fontSize: '14px',
-                    lineHeight: '22px',
-                    color: '#6c737f',
-                    margin: 0,
-                }}>{title}</p>
-                <div style={{ display: 'flex', gap: '2px', alignItems: 'flex-end', marginTop: '4px' }}>
-                    <p style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontWeight: 500,
-                        fontSize: '24px',
-                        color: isNegative ? '#ef4444' : '#111927',
-                        margin: 0,
-                    }}>{value}</p>
-                    {unit && (
-                        <p style={{
-                            fontFamily: F,
-                            fontSize: '12px',
-                            lineHeight: '20px',
-                            color: isNegative ? '#ef4444' : '#6c737f',
-                            margin: 0,
-                        }}>{unit}</p>
-                    )}
-                </div>
-            </div>
-            {variant === 'trend' && (
-                <div style={{ width: '100%', height: '36px', marginTop: '12px', marginLeft: '-16px', marginRight: '-16px', width: 'calc(100% + 32px)' }}>
-                    <svg viewBox="0 0 100 24" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
-                        <defs>
-                            <linearGradient id={isNegative ? 'gradRed' : 'gradBlue'} x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor={isNegative ? redColor : blueStart} stopOpacity="0.2" />
-                                <stop offset="100%" stopColor={isNegative ? redColor : blueStart} stopOpacity="0" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M0,20 Q10,12 20,18 T40,8 T60,22 T80,14 T100,6" fill="none" stroke={isNegative ? redColor : blueStart} strokeWidth="2" strokeLinecap="round" />
-                        <path d="M0,20 Q10,12 20,18 T40,8 T60,22 T80,14 T100,6 L100,24 L0,24 Z" fill={`url(#${isNegative ? 'gradRed' : 'gradBlue'})`} />
-                    </svg>
-                </div>
-            )}
-        </div>
-    );
-}
 
 // ─── Segmented Tabs (Figma: "Tabs" component) ────────────────────────────────
 // active: bg-accent/1 (#ebf1ff), rounded-[6px], px-3 h-8
@@ -243,10 +77,14 @@ function SegmentedTabs({ tabs, active, onChange }) {
 // ─── Horizontal Tabs (time selector) ─────────────────────────────────────────
 // Figma: bg-secondary border-normal rounded-md w-[203px], active tab: bg-primary_alt border-strong shadow
 function HorizontalTabs({ tabs, active, onChange }) {
+    const { getVar } = useTheme();
+    const borderNormal = getVar('border-normal') || '#e5e7eb';
     return (
         <div style={{
             background: '#f9fafb',
-            border: '1px solid #e5e7eb',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: borderNormal,
             borderRadius: '8px',
             display: 'flex',
             height: '36px',
@@ -265,7 +103,9 @@ function HorizontalTabs({ tabs, active, onChange }) {
                             justifyContent: 'center',
                             padding: '6px 12px',
                             background: isActive ? 'white' : 'transparent',
-                            border: isActive ? '1px solid #d2d6db' : '1px solid transparent',
+                            borderWidth: '1px',
+                            borderStyle: 'solid',
+                            borderColor: isActive ? borderNormal : 'transparent',
                             borderRadius: isActive ? '8px' : '0',
                             boxShadow: isActive ? '0px 1px 2px 0px rgba(17,25,39,0.05)' : 'none',
                             cursor: 'pointer',
@@ -453,12 +293,17 @@ function PieLegend({ items }) {
 // ─── Card Panel Wrapper ───────────────────────────────────────────────────────
 // Figma: bg-white, border-[0.5px] border-primary (#d5d7da), p-[20px], rounded-[8px], gap-[16px]
 function CardPanel({ title, children, style = {} }) {
+    const { getVar } = useTheme();
+    const borderNormal = getVar('border-normal') || '#d5d7da';
+
     return (
         <div style={{
             background: 'white',
-            border: '0.5px solid #d5d7da',
-            borderRadius: '8px',
-            padding: '20px',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: borderNormal,
+            borderRadius: '12px',
+            padding: '24px',
             display: 'flex',
             flexDirection: 'column',
             gap: '16px',
@@ -480,187 +325,19 @@ function CardPanel({ title, children, style = {} }) {
     );
 }
 
-// ─── Model List Table ─────────────────────────────────────────────────────────
-// Exact columns & data from Figma MCP design context
-// ─── Table Shared Style Helpers ──────────────────────────────────────────────
-const getStatusDotStyle = (status) => {
-    const isSuccess = status === '成功' || status === 'Active' || status === '运行中';
-    const isWarning = status === 'Warning';
-    const isError = status === '失败' || status === 'Error';
-
-    const color = isSuccess ? '#12B76A' : (isWarning ? '#F79009' : (isError ? '#F04438' : '#98A2B3'));
-    return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#384250' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} />
-            <span>{status}</span>
-        </div>
-    );
-};
-
-const ActionButton = ({ icon, color = '#6c737f', title = '详情' }) => {
-    const [isHover, setIsHover] = useState(false);
-    return (
-        <button
-            title={title}
-            onMouseEnter={() => setIsHover(true)}
-            onMouseLeave={() => setIsHover(false)}
-            style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '32px',
-                height: '32px',
-                borderRadius: '6px',
-                border: 'none',
-                backgroundColor: isHover ? '#f3f4f6' : 'transparent',
-                color: color,
-                cursor: 'pointer',
-                fontSize: '18px',
-                transition: 'all 0.2s',
-            }}
-        >
-            <i className={icon}></i>
-        </button>
-    );
-};
-
-function TableRow({ children, isHeader = false }) {
-    const [isHover, setIsHover] = useState(false);
-    const bgRowNormal = 'white';
-    const bgRowHover = '#F9FAFB';
-
-    return (
-        <tr
-            style={{
-                backgroundColor: isHeader ? '#f9fafb' : (isHover ? bgRowHover : bgRowNormal),
-                transition: 'background-color 0.2s ease',
-            }}
-            onMouseEnter={() => !isHeader && setIsHover(true)}
-            onMouseLeave={() => !isHeader && setIsHover(false)}
-        >
-            {children}
-        </tr>
-    );
-}
-
-function ObservabilityTable() {
-    return (
-        <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px', background: 'white' }}>
-                <thead>
-                    <TableRow isHeader={true}>
-                        {obsHeaders.map((h, i) => (
-                            <th key={i} style={{ padding: '12px 20px', fontSize: '12px', fontWeight: 500, color: '#6c737f', borderBottom: '1px solid #f3f4f6', fontFamily: F }}>{h}</th>
-                        ))}
-                    </TableRow>
-                </thead>
-                <tbody>
-                    {obsTableRows.map((row, i) => (
-                        <TableRow key={i}>
-                            {row.map((cell, j) => {
-                                let content = cell;
-                                if (j === 2) content = getStatusDotStyle(cell);
-                                if (j === 6) content = <ActionButton icon="ri-eye-line" color="#4D6AFF" title="查看详情" />;
-
-                                return (
-                                    <td key={j} style={{ padding: '16px 20px', fontSize: '14px', color: '#111927', borderBottom: '1px solid #f3f4f6', fontWeight: 400, fontFamily: F }}>
-                                        {content}
-                                    </td>
-                                );
-                            })}
-                        </TableRow>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
-}
-
-// ─── Usage DataTable ────────────────────────────────────────────────────────
-function UsageDataTable() {
-    const headers = ['模型实例名称', '调用次数(次)', '调用失败', '调用失败率', '总Token', '输入Token', '操作'];
-    const rows = [
-        ['qwen-7b-inrerence', '3,200', '12', '0.37%', '1,200,000', '800,000', '详情'],
-        ['deepseek-67b-api', '1,800', '5', '0.28%', '900,000', '600,000', '详情'],
-        ['chatglm-6b-dev', '1,200', '8', '0.67%', '400,000', '250,000', '详情'],
-    ];
-    return (
-        <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px', background: 'white' }}>
-                <thead>
-                    <TableRow isHeader={true}>
-                        {headers.map((h, i) => (
-                            <th key={i} style={{ padding: '12px 20px', fontSize: '12px', fontWeight: 500, color: '#6c737f', borderBottom: '1px solid #f3f4f6', fontFamily: F }}>{h}</th>
-                        ))}
-                    </TableRow>
-                </thead>
-                <tbody>
-                    {rows.map((row, i) => (
-                        <TableRow key={i}>
-                            {row.map((cell, j) => {
-                                let content = cell;
-                                if (j === headers.length - 1) content = <ActionButton icon="ri-eye-line" color="#4D6AFF" title="查询详情" />;
-
-                                return (
-                                    <td key={j} style={{ padding: '16px 20px', fontSize: '14px', color: (j === 0) ? '#111927' : '#384250', borderBottom: '1px solid #f3f4f6', fontWeight: j === 0 ? 500 : 400, fontFamily: F }}>
-                                        {content}
-                                    </td>
-                                );
-                            })}
-                        </TableRow>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
-}
-
-// ─── Recent Activity Table ────────────────────────────────────────────────────
-function RecentActivityTable() {
-    const headers = ['时间', '资源名称', '操作类型', '操作详情', '状态'];
-    const rows = [
-        ['2025-03-19 09:21:33', 'qwen-7b-inrerence', '模型调用', 'POST /v1/chat/completions 200 OK', '成功'],
-        ['2025-03-19 09:14:21', 'deepseek-67b-api', '模型调用', 'POST /v1/chat/completions 429 Rate Limit', '失败'],
-        ['2025-03-19 09:08:44', 'chatglm-6b-dev', '配置更新', '更新并发数限制：20 → 50', '成功'],
-    ];
-    return (
-        <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '800px', background: 'white' }}>
-                <thead>
-                    <TableRow isHeader={true}>
-                        {headers.map((h, i) => (
-                            <th key={i} style={{ padding: '12px 20px', fontSize: '12px', fontWeight: 500, color: '#6c737f', borderBottom: '1px solid #f3f4f6', fontFamily: F }}>{h}</th>
-                        ))}
-                    </TableRow>
-                </thead>
-                <tbody>
-                    {rows.map((row, i) => (
-                        <TableRow key={i}>
-                            {row.map((cell, j) => {
-                                let content = cell;
-                                if (j === 4) content = getStatusDotStyle(cell);
-
-                                return (
-                                    <td key={j} style={{ padding: '16px 20px', fontSize: '14px', color: '#384250', borderBottom: '1px solid #f3f4f6', fontWeight: 400, fontFamily: F }}>
-                                        {content}
-                                    </td>
-                                );
-                            })}
-                        </TableRow>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
-}
+// Legacy table components removed in favor of StandardTable
 
 // ─── Model Input (Dropdown selector) ─────────────────────────────────────────
 // Figma: bg-primary border-normal border rounded-md h-9 w-60 px-3 gap-2
 function ModelSelector() {
+    const { getVar } = useTheme();
+    const borderNormal = getVar('border-normal') || '#e5e7eb';
     return (
         <div style={{
             background: 'white',
-            border: '1px solid #e5e7eb',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderColor: borderNormal,
             borderRadius: '8px',
             height: '36px',
             width: '240px',
@@ -698,25 +375,18 @@ function Overview({ currentPage, onNavigate }) {
     ];
 
     const top5CallData = [
-        { name: 'qwen-7b', value: '3,200', dotImg: IMG.dot0 },
-        { name: 'deepseek-67b', value: '1,800', dotImg: IMG.dot1 },
-        { name: 'chatglm-6b', value: '1,200', dotImg: IMG.dot2 },
-        { name: 'ernie-4 Ads', value: '800', dotImg: IMG.dot3 },
-        { name: 'bge-large Ads', 'value': '500', dotImg: IMG.dot4 },
+        { name: 'qwen-7b', value: '3,200' },
+        { name: 'deepseek-67b', value: '1,800' },
+        { name: 'chatglm-6b', value: '1,200' },
+        { name: 'ernie-4 Ads', value: '800' },
+        { name: 'bge-large Ads', 'value': '500' },
     ];
     const top5TokenData = [
-        { name: 'qwen-7b', value: '1,200,000', dotImg: IMG.dot0 },
-        { name: 'deepseek-67b', value: '900,000', dotImg: IMG.dot1 },
-        { name: 'chatglm-6b', value: '400,000', dotImg: IMG.dot2 },
-        { name: 'ernie-4 Ads', value: '200,000', dotImg: IMG.dot3 },
-        { name: 'bge-large Ads', 'value': '100,000', dotImg: IMG.dot4 },
-    ];
-    const piePieces = [
-        { img: IMG.pieSlice0 },
-        { img: IMG.pieSlice1 },
-        { img: IMG.pieSlice2 },
-        { img: IMG.pieSlice3 },
-        { img: IMG.pieSlice4 },
+        { name: 'qwen-7b', value: '1,200,000' },
+        { name: 'deepseek-67b', value: '900,000' },
+        { name: 'chatglm-6b', value: '400,000' },
+        { name: 'ernie-4 Ads', value: '200,000' },
+        { name: 'bge-large Ads', 'value': '100,000' },
     ];
 
     const mainObsMetrics = [
@@ -822,12 +492,52 @@ function Overview({ currentPage, onNavigate }) {
                                     </CardPanel>
                                 </div>
 
-                                <CardPanel title="调用趋势">
-                                    <UsageDataTable />
+                                <CardPanel title="模型调用详情">
+                                    <StandardTable 
+                                        columns={[
+                                            { title: '模型实例名称', dataIndex: 'name', style: { fontWeight: 500, color: '#111927' } },
+                                            { title: '调用次数(次)', dataIndex: 'calls' },
+                                            { title: '调用失败', dataIndex: 'failed' },
+                                            { title: '调用失败率', dataIndex: 'failedRate' },
+                                            { title: '总Token', dataIndex: 'totalTokens' },
+                                            { title: '输入Token', dataIndex: 'inputTokens' },
+                                            { title: '操作', dataIndex: 'actions' },
+                                        ]} 
+                                        dataSource={[
+                                            { id: 1, name: 'qwen-7b-inrerence', calls: '3,200', failed: '12', failedRate: '0.37%', totalTokens: '1,200,000', inputTokens: '800,000' },
+                                            { id: 2, name: 'deepseek-67b-api', calls: '1,800', failed: '5', failedRate: '0.28%', totalTokens: '900,000', inputTokens: '600,000' },
+                                            { id: 3, name: 'chatglm-6b-dev', calls: '1,200', failed: '8', failedRate: '0.67%', totalTokens: '400,000', inputTokens: '250,000' },
+                                        ]} 
+                                        renderCell={(dataIndex, value) => {
+                                            if (dataIndex === 'actions') {
+                                                return <StandardActionButtons actions={[{ icon: 'ri-eye-line', title: '查看详情' }]} />;
+                                            }
+                                            return value;
+                                        }}
+                                    />
                                 </CardPanel>
 
                                 <CardPanel title="资源活跃记录" style={{ marginBottom: '32px' }}>
-                                    <RecentActivityTable />
+                                    <StandardTable 
+                                        columns={[
+                                            { title: '时间', dataIndex: 'time' },
+                                            { title: '资源名称', dataIndex: 'resource', style: { fontWeight: 500, color: '#111927' } },
+                                            { title: '操作类型', dataIndex: 'type' },
+                                            { title: '操作详情', dataIndex: 'detail' },
+                                            { title: '状态', dataIndex: 'status' },
+                                        ]} 
+                                        dataSource={[
+                                            { id: 1, time: '2025-03-19 09:21:33', resource: 'qwen-7b-inrerence', type: '模型调用', detail: 'POST /v1/chat/completions 200 OK', status: '成功' },
+                                            { id: 2, time: '2025-03-19 09:14:21', resource: 'deepseek-67b-api', type: '模型调用', detail: 'POST /v1/chat/completions 429 Rate Limit', status: '失败' },
+                                            { id: 3, time: '2025-03-19 09:08:44', resource: 'chatglm-6b-dev', type: '配置更新', detail: '更新并发数限制：20 → 50', status: '成功' },
+                                        ]} 
+                                        renderCell={(dataIndex, value) => {
+                                            if (dataIndex === 'status') {
+                                                return <StatusBadge status={value} />;
+                                            }
+                                            return value;
+                                        }}
+                                    />
                                 </CardPanel>
 
                             </>
@@ -852,7 +562,35 @@ function Overview({ currentPage, onNavigate }) {
                                 </CardPanel>
 
                                 <CardPanel title="模型列表" style={{ marginBottom: '32px' }}>
-                                    <ObservabilityTable />
+                                    <StandardTable 
+                                        columns={[
+                                            { title: '模型实例名称', dataIndex: 'instance' },
+                                            { title: '模型名称', dataIndex: 'model' },
+                                            { title: '运行状态', dataIndex: 'status' },
+                                            { title: '算力单元', dataIndex: 'unit' },
+                                            { title: '算力单元数量', dataIndex: 'count' },
+                                            { title: '占用显存', dataIndex: 'vram' },
+                                            { title: '操作', dataIndex: 'actions' },
+                                        ]} 
+                                        dataSource={[
+                                            { id: 1, instance: 'qwen-7b-inrerence', model: 'qwen-7b', status: '运行中', unit: 'A100', count: '1', vram: '24GB' },
+                                            { id: 2, instance: 'deepseek-67b-api', model: 'deepseek-67b', status: '运行中', unit: 'A100', count: '1', vram: '24GB' },
+                                            { id: 3, instance: 'chatglm-6b-dev', model: 'chatglm-6b', status: '运行中', unit: 'A100', count: '1', vram: '24GB' },
+                                            { id: 4, instance: 'qwen-7b-inrerence', model: 'qwen-7b', status: '运行中', unit: 'A100', count: '1', vram: '24GB' },
+                                            { id: 5, instance: 'qwen-7b-inrerence', model: 'qwen-7b', status: '运行中', unit: 'A100', count: '1', vram: '24GB' },
+                                            { id: 6, instance: 'qwen-7b-inrerence', model: 'qwen-7b', status: '运行中', unit: 'A100', count: '1', vram: '24GB' },
+                                            { id: 7, instance: 'qwen-7b-inrerence', model: 'qwen-7b', status: '运行中', unit: 'A100', count: '1', vram: '24GB' },
+                                        ]} 
+                                        renderCell={(dataIndex, value) => {
+                                            if (dataIndex === 'status') {
+                                                return <StatusBadge status={value} />;
+                                            }
+                                            if (dataIndex === 'actions') {
+                                                return <StandardActionButtons actions={[{ icon: 'ri-eye-line', title: '查看详情' }]} />;
+                                            }
+                                            return value;
+                                        }}
+                                    />
                                 </CardPanel>
                             </>
                         )}

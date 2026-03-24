@@ -39,7 +39,7 @@ function Sidebar({ currentPage, onNavigate }) {
 
     const bgSlidebar = getVar('background/bg-slidebar') || '#F7F9FF';
     const textSecondary = getVar('text/text-secondary') || '#6C737F';
-    const borderNormal = getVar('border/border-normal') || '#D5D7DA';
+    const borderNormal = getVar('border-normal') || '#D5D7DA';
 
     const sidebarStyle = {
         display: 'flex',

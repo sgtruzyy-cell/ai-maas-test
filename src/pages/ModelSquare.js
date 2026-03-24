@@ -19,8 +19,20 @@ import ModelPhotoZhiPu from '../images/ModelPhoto_ZhiPu.png';
 function ModelSquare({ currentPage, onNavigate }) {
   const { getVar } = useTheme();
   const [searchValue, setSearchValue] = useState('');
-  const [activeFilters, setActiveFilters] = useState(['文本生成', '通义千问']);
-  const [selectedCardId, setSelectedCardId] = useState(null); // No card is selected by default
+  const [activeFilters, setActiveFilters] = useState([]);
+  const [selectedCardId, setSelectedCardId] = useState(null);
+
+  // Define full lists for groups to enable AND logic filtering
+  const categoryList = ['文本生成', '图像生成', '视频生成', '语音生成', '向量模型', '多模态'];
+  const providerDisplayMap = {
+    '通义千问': 'qwen',
+    'DeepSeek': 'deepseek',
+    '百度文心一言': 'baidu',
+    '智谱GLM': 'zhipuai',
+    'Llama': 'meta',
+    'Moonshot': 'moonshot'
+  };
+  const providerList = Object.keys(providerDisplayMap);
 
   // Resolve Figma variables
   const bgPrimary = getVar('background/bg-primary') || '#FFFFFF';
@@ -30,39 +42,70 @@ function ModelSquare({ currentPage, onNavigate }) {
   const textPrimary = getVar('text/text-primary') || '#414651';
   const textSecondary = getVar('text/text-secondary') || '#6C737F';
   const textPlaceholder = getVar('text/text-placeholder') || '#A4A7AE';
-  const borderNormal = getVar('border/border-normal') || '#D5D7DA';
-  const borderWeak = getVar('border/border-weak') || '#E9EAEB';
+  const borderNormal = getVar('border-normal') || '#D5D7DA';
+  const borderWeak = getVar('border-weak') || '#E9EAEB';
+  const brandColor = getVar('ark-brand-color') || '#4D6AFF'; // Assuming brand blue
 
   const font = "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
-  // Mock model data
+  // 1. Data Cleaning & Mock Generation
   const modelAssets = [
-    { name: '通义千问-Max', provider: 'qwen-max', image: ModelPhotoQwen },
-    { name: 'Deepseek-V3', provider: 'deepseek-v3', image: ModelPhotoDeepSeek },
-    { name: 'Llama-3-70B', provider: 'llama-3', image: ModelPhotoLlama },
-    { name: 'Kimi-K2-Instruct', provider: 'moonshot', image: ModelPhotoKimi },
-    { name: 'GLM-4-9B', provider: 'zhipuai', image: ModelPhotoZhiPu },
+    { name: '通义千问-Max', provider: 'qwen', category: '文本生成', image: ModelPhotoQwen },
+    { name: 'Deepseek-V3', provider: 'deepseek', category: '文本生成', image: ModelPhotoDeepSeek },
+    { name: 'Llama-3-70B', provider: 'meta', category: '文本生成', image: ModelPhotoLlama },
+    { name: 'Kimi-K2-Instruct', provider: 'moonshot', category: '文本生成', image: ModelPhotoKimi },
+    { name: 'GLM-4-9B', provider: 'zhipuai', category: '文本生成', image: ModelPhotoZhiPu },
+    { name: '通义千问-VL', provider: 'qwen', category: '多模态', image: ModelPhotoQwen },
+    { name: 'Stable Diffusion', provider: 'stability', category: '图像生成', image: ModelPhotoZhiPu }, // Reuse an image
   ];
 
-  const models = Array(9).fill(null).map((_, index) => {
-    // Pick a random asset from the pool
-    const asset = modelAssets[Math.floor(Math.random() * modelAssets.length)];
-
+  // Generate a larger set of models
+  const allModels = Array(12).fill(null).map((_, index) => {
+    const asset = modelAssets[index % modelAssets.length];
     return {
       id: index,
       name: asset.name,
       provider: asset.provider,
+      category: asset.category,
       image: asset.image,
-      tags: ['旗舰', '高性能'],
-      description: '基于最新一代大模型架构，具备卓越的跨模态理解、代码生成及复杂逻辑推理能力。',
+      description: '基于最新一代大模型架构，具备卓越的理解、生成及复杂逻辑推理能力。',
       modelSource: asset.name.split('-')[0],
       size: '32K',
       versions: 3,
     };
   });
 
+  // 2. Filtering Logic
+  const filteredModels = allModels.filter(model => {
+    // Search filter
+    if (searchValue && !model.name.toLowerCase().includes(searchValue.toLowerCase())) return false;
+
+    // Active filters logic
+    if (activeFilters.length === 0) return true;
+
+    // Split active filters into groups
+    const activeCategories = activeFilters.filter(f => categoryList.includes(f));
+    const activeProviders = activeFilters.filter(f => providerList.includes(f));
+
+    // Internal group logic: OR (at least one must match)
+    const categoryMatch = activeCategories.length === 0 || activeCategories.includes(model.category);
+    
+    // Provider matching logic (comparing display name in filter vs model.provider ID)
+    const providerMatch = activeProviders.length === 0 || 
+                         activeProviders.some(p => providerDisplayMap[p] === model.provider);
+
+    // Cross group logic: AND (both active groups must be satisfied)
+    return categoryMatch && providerMatch;
+  });
+
   const handleCardSelect = (cardId) => {
     setSelectedCardId(prev => prev === cardId ? null : cardId);
+  };
+
+  const toggleFilter = (filter) => {
+    setActiveFilters(prev => 
+      prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
+    );
   };
 
   const removeFilter = (filter) => {
@@ -125,6 +168,8 @@ function ModelSquare({ currentPage, onNavigate }) {
     flexDirection: 'column',
   };
 
+
+
   const pageTitleStyle = {
     fontSize: '24px',
     lineHeight: '32px',
@@ -150,8 +195,8 @@ function ModelSquare({ currentPage, onNavigate }) {
   };
 
   const filterLabelStyle = {
-    fontSize: '14px',
-    lineHeight: '22px',
+    fontSize: '16px',
+    lineHeight: '24px',
     fontWeight: 500,
     color: textTitle,
     flexShrink: 0,
@@ -267,16 +312,16 @@ function ModelSquare({ currentPage, onNavigate }) {
                 <div style={{ height: '36px', display: 'flex', alignItems: 'center' }}>
                   <span style={filterLabelStyle}>模型筛选</span>
                 </div>
-                <FilterPanel />
+                <FilterPanel activeFilters={activeFilters} onToggleFilter={toggleFilter} />
               </div>
 
               {/* Right Content Container */}
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: '16px' }}>
                 {/* Top Bar for Tags and Search */}
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', height: '36px' }}>
-                  <div style={{ ...modelCountStyle, borderLeft: 'none', paddingLeft: 0 }}>
-                    <span style={{ fontSize: '14px', color: textTitle, fontWeight: 500 }}>模型</span>
-                    <span style={{ fontSize: '14px', color: textTitle, fontWeight: 600 }}>35</span>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', height: '36px' }}>
+                  <div style={{ ...modelCountStyle, borderLeft: 'none', paddingLeft: 0, gap: '4px' }}>
+                    <span style={{ fontSize: '16px', color: textTitle, fontWeight: 500 }}>模型</span>
+                    <span style={{ fontSize: '16px', color: textTitle, fontWeight: 500 }}>{filteredModels.length}</span>
                   </div>
 
                   {/* Active filter tags */}
@@ -313,13 +358,13 @@ function ModelSquare({ currentPage, onNavigate }) {
 
                 {/* Model Card Grid */}
                 <div style={cardGridStyle}>
-                  {models.map((model) => (
+                  {filteredModels.map((model) => (
                     <ModelCard
                       key={model.id}
                       name={model.name}
                       provider={model.provider}
                       image={model.image}
-                      tags={model.tags}
+                      tags={[model.category]}
                       description={model.description}
                       modelSource={model.modelSource}
                       size={model.size}

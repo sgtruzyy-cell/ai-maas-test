@@ -16,8 +16,9 @@ function Header() {
     const textPrimary = getVar('text/text-primary') || '#414651';
     const textSecondary = getVar('text/text-secondary') || '#6C737F';
     const brandColor = getVar('background/bg-brand') || '#4D6AFF';
-
-    const tabs = ['菜单名称', '菜单名称', '菜单名称', '菜单名称', '菜单名称'];
+    const borderNormal = getVar('border-normal') || '#D5D7DA';
+    const tabs = ['控制台', '系统管理', '帮助文档', '关于我们'];
+    const textMain = getVar('ark-neutral-text-main') || '#414651';
 
     const headerStyle = {
         display: 'flex',
@@ -26,11 +27,11 @@ function Header() {
         height: '56px',
         padding: '0 24px',
         backgroundColor: bgPrimary,
-        boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.06)',
+        borderBottom: `1px solid ${borderNormal}`,
         position: 'relative',
         zIndex: 10,
         boxSizing: 'border-box',
-        fontFamily: "'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        fontFamily: "'PingFang SC', sans-serif",
         flexShrink: 0,
     };
 
@@ -54,7 +55,7 @@ function Header() {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        gap: '0',
+        gap: '40px',
         flex: 1,
         height: '100%',
     };
@@ -67,8 +68,8 @@ function Header() {
         height: '100%',
         fontSize: '14px',
         lineHeight: '22px',
-        fontWeight: isActive ? 500 : 400,
-        color: isActive ? brandColor : textSecondary,
+        fontWeight: isActive ? 700 : 400,
+        color: isActive ? brandColor : textMain,
         borderBottom: isActive ? `2px solid ${brandColor}` : '2px solid transparent',
         cursor: 'pointer',
         transition: 'all 0.2s ease',

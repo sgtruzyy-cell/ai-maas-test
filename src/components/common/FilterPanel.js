@@ -5,7 +5,7 @@ import { useTheme } from '../../context/ThemeContext';
  * Filter panel for model categories and providers.
  * Matches the left sidebar filter section in the Figma design.
  */
-function FilterPanel({ onFilterChange }) {
+function FilterPanel({ activeFilters = [], onToggleFilter }) {
     const { getVar } = useTheme();
 
     const textTitle = getVar('text/text-title') || '#181D27';
@@ -13,9 +13,6 @@ function FilterPanel({ onFilterChange }) {
     const textSecondary = getVar('text/text-secondary') || '#6C737F';
     const textAccent = getVar('text/text-accent') || '#4D6AFF';
     const accentBg = getVar('accent/1') || '#EBF1FF';
-
-    const [selectedCategories, setSelectedCategories] = useState(['文本生成']);
-    const [selectedProviders, setSelectedProviders] = useState(['通义千问']);
 
     const categories = [
         { name: '文本生成', count: 8 },
@@ -38,22 +35,10 @@ function FilterPanel({ onFilterChange }) {
     const sectionTitleStyle = {
         fontSize: '14px',
         lineHeight: '22px',
-        fontWeight: 600,
+        fontWeight: 500,
         color: textTitle,
         margin: '0 0 8px 0',
         fontFamily: font,
-    };
-
-    const toggleCategory = (name) => {
-        setSelectedCategories(prev =>
-            prev.includes(name) ? prev.filter(c => c !== name) : [...prev, name]
-        );
-    };
-
-    const toggleProvider = (name) => {
-        setSelectedProviders(prev =>
-            prev.includes(name) ? prev.filter(p => p !== name) : [...prev, name]
-        );
     };
 
     return (
@@ -74,8 +59,8 @@ function FilterPanel({ onFilterChange }) {
                             key={cat.name}
                             label={cat.name}
                             count={cat.count}
-                            isSelected={selectedCategories.includes(cat.name)}
-                            onClick={() => toggleCategory(cat.name)}
+                            isSelected={activeFilters.includes(cat.name)}
+                            onClick={() => onToggleFilter(cat.name)}
                             textPrimary={textPrimary}
                             textSecondary={textSecondary}
                             textAccent={textAccent}
@@ -94,8 +79,8 @@ function FilterPanel({ onFilterChange }) {
                             key={prov.name}
                             label={prov.name}
                             count={prov.count}
-                            isSelected={selectedProviders.includes(prov.name)}
-                            onClick={() => toggleProvider(prov.name)}
+                            isSelected={activeFilters.includes(prov.name)}
+                            onClick={() => onToggleFilter(prov.name)}
                             textPrimary={textPrimary}
                             textSecondary={textSecondary}
                             textAccent={textAccent}
@@ -109,8 +94,6 @@ function FilterPanel({ onFilterChange }) {
 }
 
 function FilterItem({ label, count, isSelected, onClick, textPrimary, textSecondary, textAccent, accentBg }) {
-    const [isHovered, setIsHovered] = useState(false);
-
     const itemStyle = {
         display: 'flex',
         flexDirection: 'row',
@@ -119,8 +102,8 @@ function FilterItem({ label, count, isSelected, onClick, textPrimary, textSecond
         padding: '6px 8px',
         borderRadius: '6px',
         cursor: 'pointer',
-        transition: 'background-color 0.15s ease',
-        backgroundColor: isSelected ? accentBg : (isHovered ? '#F5F6F7' : 'transparent'),
+        transition: 'all 0.15s ease',
+        backgroundColor: isSelected ? accentBg : 'transparent',
     };
 
     const labelStyle = {
@@ -140,8 +123,6 @@ function FilterItem({ label, count, isSelected, onClick, textPrimary, textSecond
         <div
             style={itemStyle}
             onClick={onClick}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
         >
             <span style={labelStyle}>{label}</span>
             <span style={countStyle}>{count}</span>

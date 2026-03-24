@@ -9,6 +9,7 @@ import { useTheme } from '../../context/ThemeContext';
 function Button({
   variant = 'primary',
   size = 'medium',
+  icon,
   children,
   onClick,
   disabled = false,
@@ -24,8 +25,8 @@ function Button({
   const brandHoverColor = getVar('background/bg-brand-hover') || '#3D57E5';
   const textWhite = getVar('text/text-white') || '#FFFFFF';
   const textPrimary = getVar('text/text-primary') || '#414651';
-  const borderNormal = getVar('border/border-normal') || '#D5D7DA';
-  const borderStrong = getVar('border/border-strong') || '#9B9EA6';
+  const borderNormal = getVar('border-normal') || '#D5D7DA';
+  const borderStrong = getVar('border-strong') || '#9B9EA6';
   const bgPrimary = getVar('background/bg-primary') || '#FFFFFF';
 
   // Size configurations from Figma
@@ -126,6 +127,7 @@ function Button({
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
     >
+      {icon && <i className={icon} style={{ fontSize: '16px' }}></i>}
       {children}
     </button>
   );

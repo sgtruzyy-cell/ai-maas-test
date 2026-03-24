@@ -10,7 +10,9 @@ export const StatusBadge = ({ status, statusMap }) => {
 
     const defaultMap = {
         '运行中': { dot: getVar('success/success-6') || '#12B76A', text: '#414651' },
+        '成功': { dot: getVar('success/success-6') || '#12B76A', text: '#414651' },
         '已停止': { dot: getVar('gray/gray-5') || '#98A2B3', text: '#6C737F' },
+        '失败': { dot: getVar('error/error-6') || '#F04438', text: '#F04438' },
         '错误': { dot: getVar('error/error-6') || '#F04438', text: '#F04438' },
         '进行中': { dot: getVar('brand/brand-6') || '#4D6AFF', text: '#414651' }
     };
@@ -154,10 +156,10 @@ function TableRow({ children, isHeader = false, bgSecondary }) {
 const StandardTable = ({ columns, dataSource, renderCell }) => {
     const { getVar } = useTheme();
 
-    const bgSecondary = getVar('background/bg-secondary') || '#F9FAFB';
+    const bgSecondary = getVar('ark-neutral-bg-secondary') || getVar('background/bg-secondary') || '#F9FAFB';
     const textPrimary = getVar('text/text-primary') || '#414651';
     const textSecondary = getVar('text/text-secondary') || '#6C737F';
-    const borderWeak = getVar('border/border-weak') || '#F3F4F6';
+    const borderWeak = getVar('border-weak') || '#F3F4F6';
 
     const tableStyle = { 
         width: '100%', 

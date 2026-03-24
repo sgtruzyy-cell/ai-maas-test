@@ -151,18 +151,42 @@ function resolveVariable(variableId, modesByCollectionName = {}) {
 
 // Get variable by name with dynamic mode resolution
 function getVariableByName(name, modesByCollectionName = {}) {
-  // Try to find by name
-  for (const variable of variableMap.values()) {
-    if (variable.name === name) {
-      return resolveVariable(variable.id, modesByCollectionName);
+  // Normalize search name and handle potential aliasing
+  const nameToTry = [
+    name,
+    name.replace(/-/g, '/'), // border-normal -> border/border-normal
+    name.replace('border-', 'border/border-'), // border-normal -> border/border-normal (explicit)
+    name.replace('ark-neutral-border-', 'border/border-'), // ark-neutral-border-normal -> border/border-normal
+    name.replace('ark-neutral-text-main', 'text/text-primary'), // Exception: main -> primary
+    name.replace('ark-neutral-text-', 'text/text-'), // General pattern
+  ];
+
+  // 1. Try to find by normalized name variations
+  for (const n of nameToTry) {
+    for (const variable of variableMap.values()) {
+      if (variable.name === n) {
+        return resolveVariable(variable.id, modesByCollectionName);
+      }
     }
   }
   
-  // If not found, try to find by codeSyntax.WEB (CSS variable format)
-  const cssVarFormat = `var(--${name})`;
-  for (const variable of variableMap.values()) {
-    if (variable.codeSyntax && variable.codeSyntax.WEB === cssVarFormat) {
-      return resolveVariable(variable.id, modesByCollectionName);
+  // 2. Try to find by codeSyntax.WEB (CSS variable format)
+  for (const n of nameToTry) {
+    const cssVarFormat = `var(--${n})`;
+    for (const variable of variableMap.values()) {
+      if (variable.codeSyntax && variable.codeSyntax.WEB === cssVarFormat) {
+        return resolveVariable(variable.id, modesByCollectionName);
+      }
+    }
+  }
+
+  // 3. Fallback: try case-insensitive and partial path matches for "border"
+  if (name.includes('border')) {
+    const searchPart = name.split('-').pop(); // e.g. "normal" from "border-normal"
+    for (const variable of variableMap.values()) {
+      if (variable.name.startsWith('border/') && variable.name.endsWith(searchPart)) {
+        return resolveVariable(variable.id, modesByCollectionName);
+      }
     }
   }
   

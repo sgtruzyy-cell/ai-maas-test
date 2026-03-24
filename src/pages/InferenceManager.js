@@ -48,7 +48,7 @@ const CreateTaskModal = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     const bgPrimary = getVar('background/bg-primary') || '#FFFFFF';
-    const borderNormal = getVar('border/border-normal') || '#D5D7DA';
+    const borderNormal = getVar('border-normal') || '#D5D7DA';
     const textTitle = getVar('text/text-title') || '#181D27';
     const textSecondary = getVar('text/text-secondary') || '#6C737F';
     const textPrimary = getVar('text/text-primary') || '#414651';
@@ -155,8 +155,8 @@ const InferenceManager = ({ currentPage, onNavigate }) => {
     const textTitle = getVar('text/text-title') || '#181D27';
     const textPrimary = getVar('text/text-primary') || '#414651';
     const textSecondary = getVar('text/text-secondary') || '#6C737F';
-    const borderNormal = getVar('border/border-normal') || '#D5D7DA';
-    const borderWeak = getVar('border/border-weak') || '#F3F4F6';
+    const borderNormal = getVar('border-normal') || '#D5D7DA';
+    const borderWeak = getVar('border-weak') || '#F3F4F6';
     const textAccent = getVar('text/text-accent') || '#4D6AFF';
 
     const columns = [
@@ -224,29 +224,27 @@ const InferenceManager = ({ currentPage, onNavigate }) => {
                 <main style={contentAreaStyle}>
                     <div style={headerBgStyle} />
                     <div style={contentInnerStyle}>
-                        <div style={titleAreaStyle}>
-                            <h1 style={pageTitleStyle}>推理服务管理</h1>
-                            <p style={pageDescStyle}>管理大模型推理任务，实时监控资源分配与运行状态。</p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div style={titleAreaStyle}>
+                                <h1 style={pageTitleStyle}>推理服务管理</h1>
+                                <p style={pageDescStyle}>管理大模型推理任务，实时监控资源分配与运行状态。</p>
+                            </div>
+                            <Button variant="primary" icon="ri-add-line" onClick={() => setIsModalOpen(true)}>新建推理任务</Button>
                         </div>
 
                         <div style={tableCardStyle}>
                             {/* Table Header Row */}
                             <div style={tableHeaderRowStyle}>
                                 <span style={{ fontSize: '16px', fontWeight: 700, color: textTitle }}>推理任务列表</span>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                    <div style={searchBoxStyle}>
-                                        <i className="ri-search-line" style={{ color: textSecondary, fontSize: '16px' }}></i>
-                                        <input 
-                                            type="text" 
-                                            placeholder="搜索任务名称..." 
-                                            style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontSize: '14px', color: textPrimary }} 
-                                            value={searchValue} 
-                                            onChange={(e) => setSearchValue(e.target.value)} 
-                                        />
-                                    </div>
-                                    <Button variant="primary" onClick={() => setIsModalOpen(true)}>
-                                        <i className="ri-add-line"></i> 新建推理任务
-                                    </Button>
+                                <div style={searchBoxStyle}>
+                                    <i className="ri-search-line" style={{ color: textSecondary, fontSize: '16px' }}></i>
+                                    <input 
+                                        type="text" 
+                                        placeholder="搜索任务名称..." 
+                                        style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontSize: '14px', color: textPrimary }} 
+                                        value={searchValue} 
+                                        onChange={(e) => setSearchValue(e.target.value)} 
+                                    />
                                 </div>
                             </div>
                             

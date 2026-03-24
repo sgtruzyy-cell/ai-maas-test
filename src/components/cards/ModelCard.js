@@ -100,17 +100,22 @@ function ModelCard({
         margin: 0,
     };
 
-    const tagStyle = (color) => ({
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding: '2px 8px',
-        borderRadius: '4px',
-        fontSize: '12px',
-        lineHeight: '18px',
-        fontWeight: 400,
-        backgroundColor: color === 'brand' ? accent1 : '#F0F1F3',
-        color: color === 'brand' ? textAccent : textSecondary,
-    });
+    const tagStyle = (color) => {
+        const isBrand = color === 'brand';
+        const brandRaw = getVar('ark-brand-color') || textAccent;
+        
+        return {
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '2px 8px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            lineHeight: '18px',
+            fontWeight: 500,
+            backgroundColor: isBrand ? accent1 : '#F0F1F3', // accent1 is the light brand bg
+            color: isBrand ? brandRaw : textSecondary,
+        };
+    };
 
     const descriptionStyle = {
         fontSize: '13px',

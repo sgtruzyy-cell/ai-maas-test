@@ -5,6 +5,7 @@ import Overview from './pages/Overview';
 import ModelService from './pages/ModelService';
 import ExperienceCenter from './pages/ExperienceCenter';
 import InferenceManager from './pages/InferenceManager';
+import DatasetManager from './pages/DatasetManager';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('overview');
@@ -26,8 +27,11 @@ function App() {
       {currentPage === 'model-inference' && (
         <InferenceManager currentPage={currentPage} onNavigate={setCurrentPage} />
       )}
+      {currentPage === 'data-management' && (
+        <DatasetManager currentPage={currentPage} onNavigate={setCurrentPage} />
+      )}
       {/* Fallback for other pages while they are being implemented */}
-      {!['overview', 'model-square', 'model-service', 'experience-center', 'model-inference'].includes(currentPage) && (
+      {!['overview', 'model-square', 'model-service', 'experience-center', 'model-inference', 'data-management'].includes(currentPage) && (
         <ModelSquare currentPage={currentPage} onNavigate={setCurrentPage} />
       )}
     </ThemeProvider>
